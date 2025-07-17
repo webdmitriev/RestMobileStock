@@ -70,15 +70,13 @@ class UIBuilder {
     }
     
     func addTableView() -> UITableView {
-        let table = UITableView()
+        let table = UITableView(frame: .zero, style: .plain)
         table.translatesAutoresizingMaskIntoConstraints = false
         table.backgroundColor = .appWhite
         table.contentInsetAdjustmentBehavior = .never
         table.separatorStyle = .none
         table.separatorInset = .zero
         table.layoutMargins = .zero
-        table.frame = .zero
-        table.style = .plain
         return table
     }
 }
