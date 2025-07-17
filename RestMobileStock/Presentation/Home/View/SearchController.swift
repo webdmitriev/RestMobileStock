@@ -9,43 +9,16 @@ import UIKit
 import Combine
 
 class SearchController: UIViewController, UITextFieldDelegate {
+    private let uiBuilder = UIBuilder()
     
     private var presenter: StockPresenterProtocol!
     private var cancellables = Set<AnyCancellable>()
     
     private var searchResults: [Stock] = []
     
-    private lazy var searchBar: PaddedTextField = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.delegate = self
-        $0.placeholder = "Find company or ticker"
-        $0.backgroundColor = .appWhite
-        $0.layer.cornerRadius = 24
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor.appBlack.cgColor
-        $0.clipsToBounds = true
-        $0.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        
-        $0.addTappableIcon(
-            UIImage(systemName: "chevron.left")!,
-            position: .left,
-            tintColor: .appBlack,
-            tapHandler: { [weak self] in
-                self?.handleBack()
-            }
-        )
-        return $0
-    }(PaddedTextField())
+    private lazy var searchBar: PaddedTextField = uiBuilder.addSearchBar()
 
-
-    private lazy var tableView: UITableView = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.dataSource = self
-        $0.delegate = self
-        $0.register(StockCell.self, forCellReuseIdentifier: StockCell.reuseID)
-        $0.separatorStyle = .none
-        return $0
-    }(UITableView())
+    private lazy var tableView: UITableView = uiBuilder.addTableView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,6 +29,23 @@ class SearchController: UIViewController, UITextFieldDelegate {
 
     private func setupUI() {
         view.addSubviews(searchBar, tableView)
+        
+        // MARK: Search bar
+        searchBar.delegate = self
+        searchBar.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        searchBar.addTappableIcon(
+            UIImage(systemName: "chevron.left")!,
+            position: .left,
+            tintColor: .appBlack,
+            tapHandler: { [weak self] in
+                self?.handleBack()
+            }
+        )
+        
+        // MARK: Table
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(StockCell.self, forCellReuseIdentifier: StockCell.reuseID)
         
         NSLayoutConstraint.activate([
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),

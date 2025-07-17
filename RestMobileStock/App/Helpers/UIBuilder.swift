@@ -36,6 +36,51 @@ class UIBuilder {
         view.clipsToBounds = true
         return view
     }
+    
+    func addStackView() -> UIStackView {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.alignment = .leading
+        stack.distribution = .fillEqually
+        stack.spacing = 20
+        return stack
+    }
+    
+    func addSearchBar() -> PaddedTextField {
+        let textField = PaddedTextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.placeholder = "Find company or ticker"
+        textField.backgroundColor = .appWhite
+        textField.layer.cornerRadius = 24
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = UIColor.appBlack.cgColor
+        textField.clipsToBounds = true
+        return textField
+    }
+    
+    func addButton(txt: String, fz: CGFloat = 18, color: UIColor = .appBlack) -> UIButton {
+        let btn = UIButton()
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.setTitle(txt, for: .normal)
+        btn.setTitleColor(color, for: .normal)
+        btn.titleLabel?.font = .systemFont(ofSize: fz, weight: .black)
+        btn.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        return btn
+    }
+    
+    func addTableView() -> UITableView {
+        let table = UITableView()
+        table.translatesAutoresizingMaskIntoConstraints = false
+        table.backgroundColor = .appWhite
+        table.contentInsetAdjustmentBehavior = .never
+        table.separatorStyle = .none
+        table.separatorInset = .zero
+        table.layoutMargins = .zero
+        table.frame = .zero
+        table.style = .plain
+        return table
+    }
 }
 
 class PaddedTextField: UITextField {

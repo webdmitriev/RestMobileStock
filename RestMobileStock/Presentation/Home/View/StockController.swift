@@ -28,74 +28,15 @@ class StockController: UIViewController, UITextFieldDelegate {
     
     private var searchBarHeightConstraint: NSLayoutConstraint!
     
-    private lazy var searchBar: PaddedTextField = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.delegate = self
-        $0.placeholder = "Find company or ticker"
-        $0.backgroundColor = .appWhite
-        $0.layer.cornerRadius = 24
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor.appBlack.cgColor
-        $0.clipsToBounds = true
-        
-        $0.addTappableIcon(
-            UIImage(systemName: "magnifyingglass")!,
-            position: .left,
-            tintColor: .appBlack,
-            tapHandler: { [weak self] in
-                guard let self = self else { return }
-                let searchVC = SearchController()
-                searchVC.modalPresentationStyle = .fullScreen
-                self.present(searchVC, animated: true)
-            }
-        )
-        return $0
-    }(PaddedTextField())
-
+    private lazy var searchBar: PaddedTextField = uiBuilder.addSearchBar()
     
-    private lazy var btnStackView: UIStackView = {
-        $0.addArrangedSubviews(showStocksButton, showFavoriteButton)
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.axis = .horizontal
-        $0.alignment = .leading
-        $0.distribution = .fillEqually
-        $0.spacing = 20
-        return $0
-    }(UIStackView())
+    private lazy var btnStackView: UIStackView = uiBuilder.addStackView()
     
-    private lazy var showStocksButton: UIButton = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.setTitle("Stocks", for: .normal)
-        $0.setTitleColor(.appBlack, for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 28, weight: .black)
-        $0.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        $0.addTarget(self, action: #selector(stocksButtonTapped), for: .touchUpInside)
-        return $0
-    }(UIButton())
+    private lazy var showStocksButton: UIButton = uiBuilder.addButton(txt: "Stocks", fz: 28)
     
-    private lazy var showFavoriteButton: UIButton = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.setTitle("Favorite", for: .normal)
-        $0.setTitleColor(.appGray, for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 18, weight: .black)
-        $0.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        $0.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
-        return $0
-    }(UIButton())
+    private lazy var showFavoriteButton: UIButton = uiBuilder.addButton(txt: "Favorite", fz: 18, color: .appGray)
     
-    private lazy var tableView: UITableView = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.backgroundColor = .appWhite
-        $0.contentInsetAdjustmentBehavior = .never
-        $0.separatorStyle = .none
-        $0.separatorInset = .zero
-        $0.layoutMargins = .zero
-        
-        $0.dataSource = self
-        $0.delegate = self
-        $0.register(StockCell.self, forCellReuseIdentifier: StockCell.reuseID)
-        return $0
-    }(UITableView(frame: .zero, style: .plain))
+    private lazy var tableView: UITableView = uiBuilder.addTableView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -113,7 +54,32 @@ class StockController: UIViewController, UITextFieldDelegate {
         view.backgroundColor = .appWhite
         view.addSubviews(searchBar, btnStackView, tableView)
         
+        // MARK: Search bar
         searchBarHeightConstraint = searchBar.heightAnchor.constraint(equalToConstant: 48)
+        searchBar.delegate = self
+        searchBar.addTappableIcon(
+            UIImage(systemName: "magnifyingglass")!,
+            position: .left,
+            tintColor: .appBlack,
+            tapHandler: { [weak self] in
+                guard let self = self else { return }
+                let searchVC = SearchController()
+                searchVC.modalPresentationStyle = .fullScreen
+                self.present(searchVC, animated: true)
+            }
+        )
+        
+        // MARK: StackView
+        btnStackView.addArrangedSubviews(showStocksButton, showFavoriteButton)
+        
+        // MARK: Buttons
+        showStocksButton.addTarget(self, action: #selector(stocksButtonTapped), for: .touchUpInside)
+        showFavoriteButton.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
+        
+        // MARK: Table
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(StockCell.self, forCellReuseIdentifier: StockCell.reuseID)
         
         NSLayoutConstraint.activate([
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
