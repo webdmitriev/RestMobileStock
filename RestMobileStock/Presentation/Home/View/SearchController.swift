@@ -106,7 +106,6 @@ class SearchController: UIViewController, UITextFieldDelegate {
     private func handleBack() {
         view.endEditing(true)
         dismiss(animated: true)
-        print("dismiss")
     }
 }
 
